@@ -1,5 +1,12 @@
+import 'dart:convert';
+
+import 'package:contacts_service/contacts_service.dart';
+import 'package:dart_random_choice/dart_random_choice.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:random_string/random_string.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -9,14 +16,96 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> firstNames;
+  List<String> middleNames;
+  List<String> lastNames;
+
   @override
   initState() {
     super.initState();
+    loadAssets();
+    getPermission();
   }
 
   @override
   dispose() {
     super.dispose();
+  }
+
+  loadAssets() async {
+    firstNames = await rootBundle
+        .loadString('assets/first-names.json')
+        .then((value) => json.decode(value));
+    middleNames = await rootBundle
+        .loadString('assets/middle-names.json')
+        .then((value) => json.decode(value));
+    lastNames = await rootBundle
+        .loadString('assets/last-names.json')
+        .then((value) => json.decode(value));
+  }
+
+  getPermission() async {
+    PermissionStatus permissionStatus = await _getContactPermission();
+    if (permissionStatus == PermissionStatus.granted) {
+      print('Contact Permission Granted');
+    } else {
+      _handleInvalidPermissions(permissionStatus);
+    }
+  }
+
+  Future<PermissionStatus> _getContactPermission() async {
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.contacts);
+    if (permission != PermissionStatus.granted &&
+        permission != PermissionStatus.disabled) {
+      Map<PermissionGroup, PermissionStatus> permissionStatus =
+          await PermissionHandler()
+              .requestPermissions([PermissionGroup.contacts]);
+      return permissionStatus[PermissionGroup.contacts] ??
+          PermissionStatus.unknown;
+    } else {
+      return permission;
+    }
+  }
+
+  void _handleInvalidPermissions(PermissionStatus permissionStatus) {
+    if (permissionStatus == PermissionStatus.denied) {
+      throw new PlatformException(
+          code: "PERMISSION_DENIED",
+          message: "Access to location data denied",
+          details: null);
+    } else if (permissionStatus == PermissionStatus.disabled) {
+      throw new PlatformException(
+          code: "PERMISSION_DISABLED",
+          message: "Location data is not available on device",
+          details: null);
+    }
+  }
+
+  loadContacts(int numContacts) async {
+    for (var i = 0; i < numContacts; i++) {
+      Contact contact = Contact(
+          givenName: randomChoice(firstNames),
+          middleName: randomChoice(middleNames),
+          familyName: randomChoice(lastNames),
+          phones: [
+            for (var i = 0; i < randomBetween(1, 4); i++)
+              Item(
+                  label: 'phone $i',
+                  value: randomBetween(10000000000, 9999999999).toString())
+          ],
+          emails: [
+            for (var i = 0; i < randomBetween(1, 4); i++)
+              Item(label: 'email $i', value: randomAlpha(10) + '@gmail.com')
+          ]);
+      await ContactsService.addContact(contact);
+    }
+  }
+
+  deleteAllContacts() async {
+    Iterable<Contact> contacts =
+        await ContactsService.getContacts(withThumbnails: false);
+    for (var contact in contacts) await ContactsService.deleteContact(contact);
   }
 
   Future<bool> _addDialog(BuildContext context, int num) {
@@ -71,20 +160,26 @@ class _HomePageState extends State<HomePage> {
               child: Text('Generate 100 Random Contacts'),
               onPressed: () async {
                 var numContacts = 100;
-                await _addDialog(context, numContacts);
+                await _addDialog(context, numContacts).then((val) async {
+                  if (val ?? false) await loadContacts(numContacts);
+                });
               },
             ),
             PlatformButton(
               child: Text('Generate 1000 Random Contacts'),
               onPressed: () async {
                 var numContacts = 1000;
-                await _addDialog(context, numContacts);
+                await _addDialog(context, numContacts).then((val) async {
+                  if (val ?? false) await loadContacts(numContacts);
+                });
               },
             ),
             PlatformButton(
               child: Text('DELETE ALL CONTACTS'),
               onPressed: () async {
-                await _deleteDialog(context);
+                await _deleteDialog(context).then((val) async {
+                  if (val ?? false) await deleteAllContacts();
+                });
               },
               color: Colors.red,
             ),
