@@ -35,13 +35,13 @@ class _HomePageState extends State<HomePage> {
   loadAssets() async {
     firstNames = await rootBundle
         .loadString('assets/first-names.json')
-        .then((value) => json.decode(value));
+        .then((value) => List<String>.from(json.decode(value)));
     middleNames = await rootBundle
         .loadString('assets/middle-names.json')
-        .then((value) => json.decode(value));
+        .then((value) => List<String>.from(json.decode(value)));
     lastNames = await rootBundle
         .loadString('assets/last-names.json')
-        .then((value) => json.decode(value));
+        .then((value) => List<String>.from(json.decode(value)));
   }
 
   getPermission() async {
@@ -92,7 +92,7 @@ class _HomePageState extends State<HomePage> {
             for (var i = 0; i < randomBetween(1, 4); i++)
               Item(
                   label: 'phone $i',
-                  value: randomBetween(10000000000, 9999999999).toString())
+                  value: randomBetween(2000000000, 7999999999).toString())
           ],
           emails: [
             for (var i = 0; i < randomBetween(1, 4); i++)
