@@ -2,7 +2,7 @@ PODS:
   - contacts_service (0.2.1):
     - Flutter
   - Flutter (1.0.0)
-  - permission_handler (3.2.2):
+  - permission_handler (4.0.0):
     - Flutter
 
 DEPENDENCIES:
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   contacts_service: d212985196c101372bb55c42f41dae7be59ab811
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  permission_handler: d59f41439f5bc6c4d1005f3355e98f05ddc68ece
+  permission_handler: 0fb88b8a3c23e31e5de45b8f1bb8b7de28cf8941
 
 PODFILE CHECKSUM: 10ae9c18d12c9ffc2275c9a159a3b1e281990db0
 
-COCOAPODS: 1.8.3
+COCOAPODS: 1.8.4

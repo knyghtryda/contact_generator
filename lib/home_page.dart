@@ -82,12 +82,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  loadContacts(int numContacts) async {
+  loadContacts(int numContacts, {bool fuzz = false}) async {
     for (var i = 0; i < numContacts; i++) {
       Contact contact = Contact(
-          givenName: randomChoice(firstNames),
-          middleName: randomChoice(middleNames),
-          familyName: randomChoice(lastNames),
+          givenName: fuzz ? randomString(10) : randomChoice(firstNames),
+          middleName: fuzz ? randomString(10) : randomChoice(middleNames),
+          familyName: fuzz ? randomString(10) : randomChoice(lastNames),
           phones: [
             for (var i = 0; i < randomBetween(1, 4); i++)
               Item(
@@ -171,6 +171,15 @@ class _HomePageState extends State<HomePage> {
                 var numContacts = 1000;
                 await _addDialog(context, numContacts).then((val) async {
                   if (val ?? false) await loadContacts(numContacts);
+                });
+              },
+            ),
+            PlatformButton(
+              child: Text('Generate 100 Fuzzing Contacts'),
+              onPressed: () async {
+                var numContacts = 100;
+                await _addDialog(context, numContacts).then((val) async {
+                  if (val ?? false) await loadContacts(numContacts, fuzz: true);
                 });
               },
             ),

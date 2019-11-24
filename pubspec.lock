@@ -35,7 +35,7 @@ packages:
       name: contacts_service
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.4"
+    version: "0.3.9"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -61,7 +61,7 @@ packages:
       name: flutter_platform_widgets
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.20.1"
+    version: "0.20.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -101,7 +101,7 @@ packages:
       name: permission_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.2"
+    version: "4.0.0"
   quiver:
     dependency: transitive
     description:
