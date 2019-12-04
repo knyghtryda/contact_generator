@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dart_random_choice/dart_random_choice.dart';
+import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   List<String> firstNames;
   List<String> middleNames;
   List<String> lastNames;
+  List<Map<String, String>> states;
 
   @override
   initState() {
@@ -32,6 +34,8 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  Faker faker = Faker();
+
   loadAssets() async {
     firstNames = await rootBundle
         .loadString('assets/first-names.json')
@@ -42,6 +46,9 @@ class _HomePageState extends State<HomePage> {
     lastNames = await rootBundle
         .loadString('assets/last-names.json')
         .then((value) => List<String>.from(json.decode(value)));
+    states = await rootBundle
+        .loadString('assets/states.json')
+        .then((value) => List<Map<String, String>>.from(json.decode(value)));
   }
 
   getPermission() async {
@@ -85,9 +92,20 @@ class _HomePageState extends State<HomePage> {
   loadContacts(int numContacts, {bool fuzz = false}) async {
     for (var i = 0; i < numContacts; i++) {
       Contact contact = Contact(
-          givenName: fuzz ? randomString(10) : randomChoice(firstNames),
+          givenName: fuzz ? randomString(10) : faker.person.firstName(),
           middleName: fuzz ? randomString(10) : randomChoice(middleNames),
-          familyName: fuzz ? randomString(10) : randomChoice(lastNames),
+          familyName: fuzz ? randomString(10) : faker.person.lastName(),
+          company: faker.company.name(),
+          jobTitle: faker.job.title(),
+          postalAddresses: [
+            PostalAddress(
+                label: 'Main',
+                street: faker.address.streetAddress(),
+                city: faker.address.city(),
+                region: randomChoice(states.map((pair) => pair['name'])),
+                postcode: faker.address.zipCode(),
+                country: faker.address.country())
+          ],
           phones: [
             for (var i = 0; i < randomBetween(1, 4); i++)
               Item(
@@ -96,7 +114,7 @@ class _HomePageState extends State<HomePage> {
           ],
           emails: [
             for (var i = 0; i < randomBetween(1, 4); i++)
-              Item(label: 'email $i', value: randomAlpha(10) + '@gmail.com')
+              Item(label: 'email $i', value: faker.internet.email())
           ]);
       await ContactsService.addContact(contact);
     }
