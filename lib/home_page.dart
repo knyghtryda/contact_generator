@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   List<String> firstNames;
   List<String> middleNames;
   List<String> lastNames;
-  List<Map<String, String>> states;
+  List<Map<String, dynamic>> states;
 
   @override
   initState() {
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
         .then((value) => List<String>.from(json.decode(value)));
     states = await rootBundle
         .loadString('assets/states.json')
-        .then((value) => List<Map<String, String>>.from(json.decode(value)));
+        .then((value) => List<Map<String, dynamic>>.from(json.decode(value)));
   }
 
   getPermission() async {
@@ -102,7 +102,7 @@ class _HomePageState extends State<HomePage> {
                 label: 'Main',
                 street: faker.address.streetAddress(),
                 city: faker.address.city(),
-                region: randomChoice(states.map((pair) => pair['name'])),
+                //region: randomChoice(states.map((pair) => pair['name'])),
                 postcode: faker.address.zipCode(),
                 country: faker.address.country())
           ],
