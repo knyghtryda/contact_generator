@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
                 label: 'Main',
                 street: faker.address.streetAddress(),
                 city: faker.address.city(),
-                region: randomChoice(states.map((pair) => pair['name'])),
+                //region: randomChoice(states.map((pair) => pair['name'])),
                 postcode: faker.address.zipCode(),
                 country: faker.address.country())
           ],
