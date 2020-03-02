@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     PermissionStatus permission = await PermissionHandler()
         .checkPermissionStatus(PermissionGroup.contacts);
     if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.disabled) {
+        permission != PermissionStatus.restricted) {
       Map<PermissionGroup, PermissionStatus> permissionStatus =
           await PermissionHandler()
               .requestPermissions([PermissionGroup.contacts]);
@@ -82,9 +82,9 @@ class _HomePageState extends State<HomePage> {
           code: "PERMISSION_DENIED",
           message: "Access to location data denied",
           details: null);
-    } else if (permissionStatus == PermissionStatus.disabled) {
+    } else if (permissionStatus == PermissionStatus.restricted) {
       throw new PlatformException(
-          code: "PERMISSION_DISABLED",
+          code: "PERMISSION_RESTRICTED",
           message: "Location data is not available on device",
           details: null);
     }
