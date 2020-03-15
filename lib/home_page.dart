@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:contacts_service/contacts_service.dart';
 import 'package:dart_random_choice/dart_random_choice.dart';
@@ -91,13 +92,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   loadContacts(int numContacts, {bool fuzz = false}) async {
+    Random random = Random();
     for (var i = 0; i < numContacts; i++) {
       Contact contact = Contact(
-          givenName: fuzz ? randomString(10) : faker.person.firstName(),
-          middleName: fuzz ? randomString(10) : randomChoice(middleNames),
-          familyName: fuzz ? randomString(10) : faker.person.lastName(),
-          company: faker.company.name(),
-          jobTitle: faker.job.title(),
+          givenName: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.person.firstName(),
+          middleName: fuzz ? (random.nextBool() ? randomString(10) : null) : randomChoice(middleNames),
+          familyName: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.person.lastName(),
+          company: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.company.name(),
+          jobTitle: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.job.title(),
           postalAddresses: [
             PostalAddress(
                 label: 'Main',
