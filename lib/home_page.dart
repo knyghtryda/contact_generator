@@ -63,18 +63,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<PermissionStatus> _getContactPermission() async {
-    PermissionStatus permission = await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.contacts);
-    if (permission != PermissionStatus.granted &&
-        permission != PermissionStatus.restricted) {
-      Map<PermissionGroup, PermissionStatus> permissionStatus =
-          await PermissionHandler()
-              .requestPermissions([PermissionGroup.contacts]);
-      return permissionStatus[PermissionGroup.contacts] ??
-          PermissionStatus.unknown;
-    } else {
-      return permission;
+    var status = await Permission.contacts.status;
+    if (status != PermissionStatus.granted &&
+        status != PermissionStatus.restricted) {
+      status = await Permission.contacts.request();
     }
+    return status;
   }
 
   void _handleInvalidPermissions(PermissionStatus permissionStatus) {
@@ -95,11 +89,21 @@ class _HomePageState extends State<HomePage> {
     Random random = Random();
     for (var i = 0; i < numContacts; i++) {
       Contact contact = Contact(
-          givenName: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.person.firstName(),
-          middleName: fuzz ? (random.nextBool() ? randomString(10) : null) : randomChoice(middleNames),
-          familyName: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.person.lastName(),
-          company: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.company.name(),
-          jobTitle: fuzz ? (random.nextBool() ? randomString(10) : null) : faker.job.title(),
+          givenName: fuzz
+              ? (random.nextBool() ? randomString(10) : null)
+              : faker.person.firstName(),
+          middleName: fuzz
+              ? (random.nextBool() ? randomString(10) : null)
+              : randomChoice(middleNames),
+          familyName: fuzz
+              ? (random.nextBool() ? randomString(10) : null)
+              : faker.person.lastName(),
+          company: fuzz
+              ? (random.nextBool() ? randomString(10) : null)
+              : faker.company.name(),
+          jobTitle: fuzz
+              ? (random.nextBool() ? randomString(10) : null)
+              : faker.job.title(),
           postalAddresses: [
             PostalAddress(
                 label: 'Main',
